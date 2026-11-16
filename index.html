@@ -29,7 +29,40 @@ h2{font-size:21px;margin:26px 0 12px}.services{display:grid;grid-template-column
 const $=id=>document.getElementById(id);let catalog=[],token="",payments={};
 const money=n=>Number(n)>0?"৳"+Number(n).toLocaleString("en-US"):"মূল্য নিশ্চিত করুন";
 async function api(path,opts={}){let h={"Content-Type":"application/json",...(opts.headers||{})};if(token)h.Authorization="Bearer "+token;let r=await fetch("/api"+path,{...opts,headers:h});let d=await r.json().catch(()=>({error:"Server response error"}));if(!r.ok)throw Error(d.error||"Request failed");return d}
-async function init(){try{let d=await api("/public");catalog=d.packages;payments=d.payments;render()}catch(e){$("msg").textContent="সার্ভারের সাথে সংযোগ হচ্ছে না। README অনুযায়ী server চালু করুন।"}}
+async function init()
+const services = [
+  {
+    id: "facebook",
+    name: "Facebook / Meta",
+    packages: ["Likes", "Views", "Comments"]
+  },
+  {
+    id: "instagram",
+    name: "Instagram",
+    packages: ["Followers", "Likes", "Views", "Comments"]
+  },
+  {
+    id: "tiktok",
+    name: "TikTok",
+    packages: ["Followers", "Likes", "Views", "Comments"]
+  },
+  {
+    id: "youtube",
+    name: "YouTube",
+    packages: ["Subscribers", "Views", "Likes", "Comments"]
+  },
+  {
+    id: "netflix",
+    name: "Netflix Subscription",
+    packages: ["Subscription"]
+  },
+  {
+    id: "spotify",
+    name: "Spotify Subscription",
+    packages: ["Subscription"]
+  }
+];
+}}
 function render(){ $("services").innerHTML=[...new Set(catalog.map(x=>x.service))].map((s,i)=>`<div class="tile" onclick="selectService('${encodeURIComponent(s)}')"><div class="ico">${["🪙","🔵","📣","📸","▶️","🎬"][i%6]}</div><b>${s}</b><small>প্যাকেজ দেখুন</small></div>`).join("");$("service").innerHTML=[...new Set(catalog.map(x=>x.service))].map(s=>`<option>${s}</option>`).join("");serviceChange();$("paymentInfo").innerHTML=[["bKash",payments.bkash],["Nagad",payments.nagad],["Rocket",payments.rocket]].map(([k,v])=>`<div class="pay">${k}: <b>${v||"Admin-এর সাথে যোগাযোগ করুন"}</b></div>`).join("")}
 function selectService(s){$("service").value=decodeURIComponent(s);serviceChange();document.querySelector(".layout").scrollIntoView({behavior:"smooth"})}
 function serviceChange(){let a=catalog.filter(x=>x.service===$("service").value);$("pack").innerHTML=a.map(x=>`<option value="${x.id}">${x.name} — ${money(x.price)}</option>`).join("");priceChange()}
